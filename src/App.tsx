@@ -6,21 +6,37 @@ import Fuse from 'fuse.js';
 
 const Footer = () => (
   <footer className="admin-footer">
-    <p>CREATED BY COMYANDRADIS</p>
+    <div className="star-map-container">
+      <div className="star-map-glow"></div>
+      <p className="authorship">CREATED BY COMYANDRADIS</p>
+    </div>
     <p className="footer-sub">© 2025 COSMIC VAULT • ARCHIVAL INTELLIGENCE UNIT</p>
   </footer>
 );
 
 const HealthSettings = ({ warmLevel, setWarmLevel }: any) => (
-  <div className="health-controls">
+  <div className="health-controls-top-right">
     <label>SPECTRAL FILTER</label>
     <input 
       type="range" 
       min="0" 
-      max="40" 
+      max="45" 
       value={warmLevel} 
       onChange={(e) => setWarmLevel(e.target.value)} 
     />
+  </div>
+);
+
+const ConstellationLoader = () => (
+  <div className="constellation-container">
+    <svg viewBox="0 0 100 100" className="constellation-svg">
+      <circle cx="20" cy="50" r="1.5" fill="white" />
+      <circle cx="50" cy="20" r="1.5" fill="white" />
+      <circle cx="80" cy="50" r="1.5" fill="white" />
+      <circle cx="50" cy="80" r="1.5" fill="white" />
+      <path d="M20 50 L50 20 L80 50 L50 80 Z" fill="none" stroke="rgba(245, 158, 11, 0.5)" strokeWidth="0.5" className="draw-path" />
+    </svg>
+    <p className="loading-text-cinzel">ALIGNING CONSTELLATIONS...</p>
   </div>
 );
 
@@ -36,11 +52,10 @@ const Home = ({ warmLevel, setWarmLevel }: any) => {
   };
 
   return (
-    <div className="page-wrapper cosmic-bg">
-      <div className="warmth-overlay" style={{ backgroundColor: `rgba(255, 150, 0, ${warmLevel / 100})` }} />
-      <header className="home-top-nav">
-          <HealthSettings warmLevel={warmLevel} setWarmLevel={setWarmLevel} />
-      </header>
+    <div className="page-wrapper parallax-bg">
+      <div className="warmth-overlay" style={{ backgroundColor: `rgba(255, 140, 0, ${warmLevel / 100})` }} />
+      <HealthSettings warmLevel={warmLevel} setWarmLevel={setWarmLevel} />
+      
       <main className="home-main">
         <h1 className="cinzel-title">COSMIC VAULT</h1>
         <p className="mission-statement">
@@ -75,7 +90,7 @@ const Results = ({ warmLevel, setWarmLevel }: any) => {
   useEffect(() => {
     fetch('/cosmic_catalog.json').then(res => res.json()).then(data => {
       setCatalog(data);
-      setLoading(false);
+      setTimeout(() => setLoading(false), 1500); // Artificial delay to show constellation
     });
   }, []);
 
@@ -86,18 +101,16 @@ const Results = ({ warmLevel, setWarmLevel }: any) => {
   }, [catalog, query]);
 
   return (
-    <div className="page-wrapper results-bg">
-      <div className="warmth-overlay" style={{ backgroundColor: `rgba(255, 150, 0, ${warmLevel / 100})` }} />
-      <header className="results-header">
+    <div className="page-wrapper parallax-bg">
+      <div className="warmth-overlay" style={{ backgroundColor: `rgba(255, 140, 0, ${warmLevel / 100})` }} />
+      <header className="results-header-minimal">
         <Link to="/" className="logo-link">COSMIC VAULT</Link>
-        <div className="nav-right">
-            <HealthSettings warmLevel={warmLevel} setWarmLevel={setWarmLevel} />
-            <p className="sector-manifest">SECTOR: <span>"{query}"</span></p>
-        </div>
+        <HealthSettings warmLevel={warmLevel} setWarmLevel={setWarmLevel} />
       </header>
+      
       <main className="results-main">
         {loading ? (
-          <p className="pulse loading-text">SCANNING MULTIVERSE...</p>
+          <ConstellationLoader />
         ) : (
           <>
             <div className="results-grid">
@@ -111,7 +124,7 @@ const Results = ({ warmLevel, setWarmLevel }: any) => {
               ))}
             </div>
             {visibleCount < filteredBooks.length && (
-              <button className="load-more" onClick={() => setVisibleCount(v => v + 9)}>LOAD FURTHER RECORDS</button>
+              <button className="load-more" onClick={() => setVisibleCount(v => v + 9)}>DECODE FURTHER RECORDS</button>
             )}
           </>
         )}
@@ -123,7 +136,6 @@ const Results = ({ warmLevel, setWarmLevel }: any) => {
 
 export default function App() {
   const [warmLevel, setWarmLevel] = useState(0);
-
   return (
     <Router>
       <Routes>

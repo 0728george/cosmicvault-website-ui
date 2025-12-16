@@ -1,159 +1,95 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+/* ... keep previous Cinzel/Inter imports ... */
 
-:root {
-  --gold: #f59e0b;
-  --star-white: #f8fafc;
-  --glass: rgba(15, 23, 42, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.1);
-}
-
-body, html {
-  margin: 0;
-  padding: 0;
-  background-color: #02040a; /* Fallback */
-  color: var(--star-white);
-  font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
-}
-
-/* THE COSMIC BACKGROUND */
+/* PARALLAX & BACKGROUND */
 .page-wrapper {
-  min-height: 100vh;
-  background: url('/bg-stars.jpg') no-repeat center center fixed;
+  background-image: url('/bg-stars.jpg');
+  background-attachment: fixed; /* Fixed background creates the depth effect on scroll */
   background-size: cover;
+  background-position: center;
+  min-height: 100vh;
   position: relative;
   display: flex;
   flex-direction: column;
 }
 
-/* THE HEALTH FILTER */
-.warmth-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  pointer-events: none;
-  z-index: 9999;
-  mix-blend-mode: multiply;
-  transition: background-color 0.3s ease;
-}
-
-/* UI ELEMENTS */
-.cinzel-title {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(3rem, 12vw, 6rem);
-  color: var(--gold);
-  letter-spacing: 15px;
-  text-shadow: 0 0 50px rgba(245, 158, 11, 0.3);
-  margin: 0;
-}
-
-.mission-statement {
-  max-width: 700px;
-  color: rgba(248, 250, 252, 0.8);
-  font-style: italic;
-  font-weight: 300;
-  line-height: 2;
-  margin: 2rem 0;
-  letter-spacing: 1px;
-}
-
-/* SEARCH BAR */
-.search-container {
+/* TOP-RIGHT SPECTRAL FILTER */
+.health-controls-top-right {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
   display: flex;
-  gap: 0;
-  width: 100%;
-  max-width: 800px;
-  background: var(--glass);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  border-radius: 50px;
-  padding: 5px;
-}
-
-.main-search {
-  flex: 1;
-  background: transparent;
-  border: none;
-  padding: 1.2rem 2rem;
-  color: white;
-  font-size: 1.1rem;
-  outline: none;
-}
-
-.search-btn {
-  background: var(--gold);
-  border: none;
-  padding: 0 2.5rem;
-  border-radius: 50px;
-  font-weight: 900;
-  cursor: pointer;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px 15px;
+  border-radius: 4px;
+  font-size: 0.65rem;
   letter-spacing: 2px;
-  transition: 0.3s;
+  color: #94a3b8;
 }
 
-.search-btn:hover {
-  background: white;
-  transform: scale(1.05);
+/* CONSTELLATION LOADER */
+.constellation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
 }
 
-/* RESULTS GRID */
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2.5rem;
-  max-width: 1300px;
-  margin: 4rem auto;
-  padding: 0 2rem;
+.constellation-svg { width: 150px; height: 150px; }
+
+.draw-path {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: draw 3s infinite alternate;
 }
 
-.book-card {
-  background: var(--glass);
-  backdrop-filter: blur(15px);
-  border: 1px solid var(--glass-border);
-  padding: 3rem;
-  border-radius: 8px;
-  transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
+@keyframes draw { to { stroke-dashoffset: 0; } }
 
-.book-card:hover {
-  border-color: var(--gold);
-  transform: translateY(-10px);
-  background: rgba(15, 23, 42, 0.8);
-}
-
-.genre-tag {
+.loading-text-cinzel {
+  font-family: 'Cinzel';
   color: var(--gold);
-  font-size: 0.6rem;
   letter-spacing: 4px;
-  font-weight: 800;
-  margin-bottom: 1.5rem;
-  display: block;
+  margin-top: 1rem;
 }
 
-.read-link {
-  display: block;
-  background: transparent;
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  text-decoration: none;
-  text-align: center;
-  padding: 0.8rem;
-  font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 2px;
-  transition: 0.3s;
-  margin-top: 2rem;
-}
-
-.read-link:hover {
-  background: var(--gold);
-  color: black;
-}
-
-/* FOOTER */
+/* STAR MAP FOOTER (Bottom Center) */
 .admin-footer {
-  padding: 6rem 0 3rem;
-  text-align: center;
-  color: rgba(148, 163, 184, 0.4);
-  letter-spacing: 5px;
-  font-size: 0.7rem;
+  margin-top: auto;
+  padding: 4rem 0 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
+.star-map-container {
+  position: relative;
+  cursor: pointer;
+  padding: 20px;
+}
+
+.authorship {
+  letter-spacing: 5px;
+  font-size: 0.8rem;
+  color: #64748b;
+  transition: color 0.5s ease;
+  z-index: 2;
+  position: relative;
+}
+
+.star-map-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 150px; height: 150px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+
+.star-map-container:hover .star-map-glow { transform: translate(-50%, -50%) scale(1.5); }
+.star-map-container:hover .authorship { color: var(--gold); }
+
+/* ... keep your grid and card styles ... */
