@@ -1,0 +1,103 @@
+:root {
+  --space-black: #050509;
+  --nebula-blue: #0f1c2e;
+  --starlight: #e0e0e0;
+  --accent-gold: #D4AF37;
+  --glass-panel: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --font-heading: 'Cinzel', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--space-black);
+  color: var(--starlight);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  line-height: 1.6;
+  overflow: hidden; /* Prevents scrollbars from the moving background */
+  position: relative;
+}
+
+/* --- THE LIVING COSMOS (Animation Layers) --- */
+
+/* Layer 1: The Nebula (Static, Deep Background) */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: 
+    radial-gradient(circle at 50% 50%, var(--nebula-blue) 0%, transparent 80%);
+  z-index: -3;
+}
+
+/* Layer 2: Distant Stars (Slow Motion) */
+.stars-small {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 200%;
+  background-image: 
+    radial-gradient(1px 1px at 100px 100px, white 1px, transparent 0),
+    radial-gradient(1px 1px at 200px 400px, white 1px, transparent 0),
+    radial-gradient(1px 1px at 300px 300px, white 1px, transparent 0),
+    radial-gradient(1px 1px at 400px 100px, white 1px, transparent 0),
+    radial-gradient(1px 1px at 50px 500px, white 1px, transparent 0),
+    radial-gradient(1px 1px at 600px 200px, white 1px, transparent 0),
+    radial-gradient(1px 1px at 700px 600px, white 1px, transparent 0);
+  background-size: 800px 800px;
+  opacity: 0.5;
+  z-index: -2;
+  animation: cosmic-travel 100s linear infinite;
+}
+
+/* Layer 3: Closer Stars (Faster Motion) */
+.stars-medium {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 200%;
+  background-image: 
+    radial-gradient(2px 2px at 150px 350px, rgba(255,255,255,0.8) 1px, transparent 0),
+    radial-gradient(2px 2px at 450px 150px, rgba(255,255,255,0.8) 1px, transparent 0),
+    radial-gradient(2px 2px at 50px 50px, rgba(255,255,255,0.8) 1px, transparent 0),
+    radial-gradient(2px 2px at 350px 550px, rgba(255,255,255,0.8) 1px, transparent 0);
+  background-size: 600px 600px;
+  opacity: 0.8;
+  z-index: -1;
+  animation: cosmic-travel 60s linear infinite;
+}
+
+@keyframes cosmic-travel {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); } /* Moves half the height (100vh) up */
+}
+
+/* --- UI ELEMENTS --- */
+
+h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; }
+
+.glass-panel {
+  background: var(--glass-panel);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--accent-gold);
+  background: transparent;
+  color: var(--accent-gold);
+  padding: 0.8rem 1.5rem;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: var(--accent-gold);
+  color: var(--space-black);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
