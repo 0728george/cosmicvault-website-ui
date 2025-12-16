@@ -1,0 +1,166 @@
+/* /Site/style.css - CosmicVault Theme */
+
+/* --- Variables and Global Reset --- */
+:root {
+    --color-background: #0D1117; /* Dark GitHub/Space Blue */
+    --color-primary: #1F6FEB;    /* GitHub Blue for accents */
+    --color-text: #E6EDF3;       /* Off-White for readability */
+    --color-secondary-text: #8B949E; /* Gray for subtle info */
+    --color-card-bg: #161B22;    /* Slightly lighter dark for cards */
+    --font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+/* --- Header and Navigation --- */
+.vault-header {
+    background-color: var(--color-card-bg);
+    padding: 20px 0;
+    border-bottom: 2px solid var(--color-primary);
+    text-align: center;
+}
+
+.vault-header h1 {
+    font-size: 2.5em;
+    margin-bottom: 0.1em;
+    color: var(--color-primary);
+}
+
+.vault-header p {
+    color: var(--color-secondary-text);
+    margin-top: 0;
+}
+
+/* --- Search Section --- */
+#search-section {
+    padding: 30px 0;
+    text-align: center;
+}
+
+#search-input {
+    width: 100%;
+    max-width: 600px;
+    padding: 15px 20px;
+    font-size: 1.1em;
+    border: 1px solid var(--color-primary);
+    border-radius: 8px;
+    background-color: var(--color-card-bg);
+    color: var(--color-text);
+    box-shadow: 0 0 10px rgba(31, 111, 235, 0.5); /* Glowing effect */
+    transition: all 0.3s;
+}
+
+#search-input::placeholder {
+    color: var(--color-secondary-text);
+}
+
+#search-input:focus {
+    outline: none;
+    border-color: var(--color-text);
+}
+
+#result-count {
+    margin-top: 10px;
+    color: var(--color-secondary-text);
+    font-size: 0.9em;
+}
+
+/* --- Content Grid --- */
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding-bottom: 50px;
+}
+
+/* Style for individual items (Book/Article Cards) */
+.item-card {
+    background-color: var(--color-card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-left: 5px solid var(--color-primary);
+    transition: transform 0.2s, box-shadow 0.2s;
+    height: 100%; /* Ensures cards in a row are same height */
+    display: flex;
+    flex-direction: column;
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(31, 111, 235, 0.4);
+}
+
+.item-card h3 {
+    margin-top: 0;
+    color: var(--color-text);
+    font-size: 1.2em;
+    flex-grow: 1; /* Pushes the rest of the content down */
+}
+
+.item-card p {
+    margin: 5px 0;
+    color: var(--color-secondary-text);
+    font-size: 0.9em;
+}
+
+.item-card .type {
+    font-weight: bold;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+    font-size: 0.8em;
+}
+
+.item-card .author {
+    color: #90CAF9; /* Light blue */
+}
+
+.item-card .read-link {
+    display: inline-block;
+    background-color: var(--color-primary);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.2s;
+}
+
+.item-card .read-link:hover {
+    background-color: #4CAF50; /* Green hover */
+}
+
+/* --- Footer --- */
+footer {
+    background-color: #000000;
+    padding: 15px 0;
+    text-align: center;
+    color: var(--color-secondary-text);
+    font-size: 0.8em;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- Utility/Loading --- */
+.loading-message {
+    grid-column: 1 / -1; /* Span all columns */
+    text-align: center;
+    padding: 50px 0;
+    color: var(--color-primary);
+    font-size: 1.2em;
+}
