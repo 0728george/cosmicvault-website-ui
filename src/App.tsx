@@ -1,152 +1,113 @@
-import { useState } from 'react';
-import Starfield from './Starfield';
-import Dashboard from './Dashboard'; // Import the new component
-import './index.css';
+import { useState, useEffect } from 'react';
 
-// ✅ Correct relative API path
-const API_URL = "/api"; 
+// Interface to match your Python JSON keys: t (title), a (author), g (genre), u (url)
+interface Book {
+  id: string;
+  t: string; 
+  a: string; 
+  g: string; 
+  y: string; 
+  u: string; 
+}
 
 function App() {
-  const [isLoginView, setIsLoginView] = useState(true);
-  const [skyMode, setSkyMode] = useState<'ambient' | 'real'>('ambient');
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [statusMsg, setStatusMsg] = useState("");
+  const [catalog, setCatalog] = useState<Book[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // User State
-  const [user, setUser] = useState<string | null>(null); // Stores userId if logged in
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // Fetch the data from the public folder
+  useEffect(() => {
+    fetch('/cosmic_catalog.json')
+      .then(res => res.json())
+      .then(data => setCatalog(data))
+      .catch(err => console.error("Vault Error:", err));
+  }, []);
 
-  // GEOGRAPHIC CENTER OF THE USA
-  const DEFAULT_LOCATION = { lat: 39.8283, lng: -98.5795 };
-
-  // --- HANDLE AUTH ---
-  const handleAuth = async () => {
-    setStatusMsg("Connecting to Vault...");
-
-    if (!email || !password) {
-      setStatusMsg("Error: Please enter email and Master Key.");
-      return;
-    }
-
-    const endpoint = isLoginView ? `${API_URL}/login` : `${API_URL}/register`;
-    
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setStatusMsg(isLoginView ? "Login Successful." : "Identity Created. Please Login.");
-        
-        if (isLoginView) {
-          // LOGIN SUCCESS -> GO TO DASHBOARD
-          if (data.userId) setUser(data.userId);
-        } else {
-          // REGISTER SUCCESS -> SWITCH TO LOGIN VIEW
-          setIsLoginView(true);
-        }
-      } else {
-        setStatusMsg(`[API Error: ${data.error || "Unknown Error"}]`);
-      }
-    } catch (e) {
-      console.error("Fetch Error:", e);
-      setStatusMsg("[Connection Failure. Try again.]");
-    }
-  };
-
-  const toggleSkyMode = () => {
-    if (skyMode === 'real') {
-      setSkyMode('ambient');
-      setStatusMsg("");
-      return;
-    }
-    setStatusMsg("Aligning telescopes...");
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-          setSkyMode('real');
-          setStatusMsg(`Observatory: ${pos.coords.latitude.toFixed(2)}°, ${pos.coords.longitude.toFixed(2)}°`);
-        },
-        () => {
-          setLocation(DEFAULT_LOCATION);
-          setSkyMode('real');
-          setStatusMsg("GPS Denied. Using Default View.");
-        }
-      );
-    } else {
-        setLocation(DEFAULT_LOCATION);
-        setSkyMode('real');
-        setStatusMsg("GPS Not Supported.");
-    }
-  };
+  // Filter logic: Checks Title, Author, and Genre
+  const filteredBooks = catalog.filter(book => 
+    book.t.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    book.a.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    book.g.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', position: 'relative' }}>
+    <div style={{ backgroundColor: '#0f172a', minHeight: '100vh', color: '#f8fafc', padding: '2rem', fontFamily: 'Inter, sans-serif' }}>
       
-      <Starfield mode={skyMode} userLocation={location} />
-
-      {/* HEADER */}
-      <header style={{ padding: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
-        <div style={{ fontSize: '1.5rem', fontFamily: 'var(--font-heading)', letterSpacing: '4px', color: 'white' }}>
-          COSMIC VAULT
-        </div>
-        
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <button onClick={toggleSkyMode} style={{ fontSize: '0.7rem', borderColor: skyMode === 'real' ? '#fff' : 'var(--accent-gold)' }}>
-            {skyMode === 'real' ? "Return to Orbit" : "View My Sky"}
-          </button>
-          
-          {/* Only show Login toggle if NOT logged in */}
-          {!user && (
-            <button onClick={() => setIsLoginView(!isLoginView)} style={{ fontSize: '0.7rem' }}>
-              {isLoginView ? "Need an Account?" : "Return to Login"}
-            </button>
-          )}
+      {/* 1. MISSION STATEMENT SECTION */}
+      <header style={{ maxWidth: '800px', margin: '0 auto 3rem auto', textAlign: 'center' }}>
+        <h1 style={{ fontFamily: 'Cinzel, serif', fontSize: '4rem', color: '#f59e0b', marginBottom: '1rem' }}>COSMIC VAULT</h1>
+        <div style={{ borderLeft: '4px solid #f59e0b', padding: '1rem', backgroundColor: 'rgba(30, 41, 59, 0.5)', fontStyle: 'italic' }}>
+          <p style={{ fontSize: '1.2rem', color: '#94a3b8', margin: 0 }}>
+            "A modern Library of Alexandria: Preserving the collective intellect of humanity 
+            through decentralized archival. Open access for all, forever."
+          </p>
         </div>
       </header>
 
-      {/* MAIN INTERFACE */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '1rem', zIndex: 10 }}>
-        
-        {/* SHOW DASHBOARD IF LOGGED IN */}
-        {user ? (
-          <Dashboard userId={user} onLogout={() => { setUser(null); setPassword(""); setStatusMsg(""); }} />
-        ) : (
-          /* SHOW LOGIN FORM IF NOT LOGGED IN */
-          skyMode === 'ambient' && (
-            <>
-              {statusMsg && <div style={{ color: 'var(--accent-gold)', marginBottom: '1rem', fontSize: '0.8rem', fontFamily: 'monospace' }}>[{statusMsg}]</div>}
+      {/* 2. INTELLIGENT SEARCH BAR */}
+      <div style={{ maxWidth: '600px', margin: '0 auto 4rem auto' }}>
+        <input 
+          type="text"
+          placeholder="Search the vault (Title, Author, or Genre)..."
+          style={{
+            width: '100%',
+            padding: '1rem',
+            borderRadius: '8px',
+            backgroundColor: '#1e293b',
+            border: '1px solid #334155',
+            color: 'white',
+            fontSize: '1.2rem',
+            outline: 'none'
+          }}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem', textAlign: 'right' }}>
+          Showing {filteredBooks.length} results
+        </p>
+      </div>
 
-              <h1 style={{ marginBottom: '1rem', textShadow: '0 0 30px rgba(255,255,255,0.3)' }}>
-                {isLoginView ? "Enter the Void" : "Join the Stars"}
-              </h1>
-              
-              <div className="glass-panel" style={{ padding: '2.5rem', width: '100%', maxWidth: '420px', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                <input type="email" placeholder="Identity (Email)" value={email} onChange={(e) => setEmail(e.target.value)}
-                  style={{ width: '100%', padding: '1rem', background: 'rgba(5, 5, 9, 0.6)', border: '1px solid #444', color: 'white', borderRadius: '4px' }} />
-
-                <input type="password" placeholder="Master Key (Password)" value={password} onChange={(e) => setPassword(e.target.value)}
-                  style={{ width: '100%', padding: '1rem', background: 'rgba(5, 5, 9, 0.6)', border: '1px solid #444', color: 'white', borderRadius: '4px' }} />
-
-                <button onClick={handleAuth} style={{ width: '100%', marginTop: '0.5rem', fontWeight: 700 }}>
-                  {isLoginView ? "Unlock Vault" : "Initialize Identity"}
-                </button>
-              </div>
-            </>
-          )
-        )}
-      </main>
-
-      <footer style={{ padding: '2rem', textAlign: 'center', opacity: 0.6, fontSize: '0.75rem', zIndex: 10 }}>
-        <p style={{letterSpacing: '1px'}}>SECURED BY AES-256 / PBKDF2</p>
-      </footer>
-
+      {/* 3. RESULTS GRID */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
+        gap: '1.5rem',
+        maxWidth: '1200px',
+        margin: '0 auto'
+      }}>
+        {filteredBooks.map((book, index) => (
+          <div key={index} style={{ 
+            backgroundColor: '#1e293b', 
+            padding: '1.5rem', 
+            borderRadius: '12px', 
+            border: '1px solid #334155',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}>
+            <div>
+              <span style={{ color: '#f59e0b', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '0.1rem' }}>{book.g.toUpperCase()}</span>
+              <h3 style={{ fontSize: '1.25rem', margin: '0.5rem 0' }}>{book.t}</h3>
+              <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>{book.a} ({book.y})</p>
+            </div>
+            <a 
+              href={book.u} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{
+                marginTop: '1.5rem',
+                backgroundColor: '#f59e0b',
+                color: 'black',
+                textAlign: 'center',
+                padding: '0.6rem',
+                borderRadius: '6px',
+                textDecoration: 'none',
+                fontWeight: 'bold'
+              }}
+            >
+              Read Now
+            </a>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
