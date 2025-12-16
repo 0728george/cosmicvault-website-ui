@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Link, useLocation } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import Fuse from 'fuse.js';
 
 // --- SHARED COMPONENTS ---
 
@@ -7,13 +8,16 @@ const Footer = () => (
   <footer style={{ 
     padding: '4rem 0 2rem 0', 
     textAlign: 'center', 
-    fontSize: '0.85rem', 
+    fontSize: '0.8rem', 
     color: '#475569', 
-    letterSpacing: '2px',
-    fontFamily: 'Inter, sans-serif'
+    letterSpacing: '3px',
+    fontFamily: 'Inter, sans-serif',
+    textTransform: 'uppercase'
   }}>
     <p>CREATED BY COMYANDRADIS</p>
-    <p style={{ fontSize: '0.7rem', marginTop: '0.5rem', opacity: 0.5 }}>© 2025 COSMIC VAULT • ALL RIGHTS RESERVED</p>
+    <p style={{ fontSize: '0.6rem', marginTop: '0.8rem', opacity: 0.4, letterSpacing: '1px' }}>
+      © 2025 COSMIC VAULT • ARCHIVAL INTELLIGENCE UNIT
+    </p>
   </footer>
 );
 
@@ -36,8 +40,8 @@ const Home = () => {
         <div style={{ width: '90%', maxWidth: '800px', textAlign: 'center' }}>
           <h1 className="cinzel-title">COSMIC VAULT</h1>
           
-          <div style={{ marginBottom: '3rem', maxWidth: '600px', margin: '0 auto 3rem auto' }}>
-            <p style={{ color: '#94a3b8', lineHeight: '1.8', fontStyle: 'italic', fontSize: '1.1rem' }}>
+          <div style={{ marginBottom: '3rem', maxWidth: '650px', margin: '0 auto 3rem auto' }}>
+            <p style={{ color: '#94a3b8', lineHeight: '1.8', fontStyle: 'italic', fontSize: '1.1rem', letterSpacing: '0.5px' }}>
               "A digital sanctuary for humanity's collective knowledge. We archive, preserve, and illuminate the public domain for generations to come."
             </p>
           </div>
@@ -49,6 +53,7 @@ const Home = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="main-search"
+              autoFocus
             />
             <button type="submit" className="search-btn">DECODE</button>
           </form>
@@ -62,61 +67,90 @@ const Home = () => {
 // --- PAGE: RESULTS ---
 
 const Results = () => {
-  const [books, setBooks] = useState([]);
+  const [catalog, setCatalog] = useState([]);
   const [visibleCount, setVisibleCount] = useState(9);
   const [loading, setLoading] = useState(true);
-  const query = new URLSearchParams(window.location.search).get('q') || '';
+  
+  const { search } = useLocation();
+  const query = useMemo(() => new URLSearchParams(search).get('q') || '', [search]);
 
   useEffect(() => {
-    // CRITICAL FIX: The leading slash '/' ensures it pulls from the root folder
+    // Fetches from /public/cosmic_catalog.json
     fetch('/cosmic_catalog.json')
       .then(res => res.json())
       .then(data => {
-        const filtered = data.filter((b: any) => 
-          b.t.toLowerCase().includes(query.toLowerCase()) || 
-          b.a.toLowerCase().includes(query.toLowerCase()) ||
-          (b.g && b.g.toLowerCase().includes(query.toLowerCase()))
-        );
-        setBooks(filtered);
+        setCatalog(data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
-  }, [query]);
+      .catch(err => {
+        console.error("Vault Access Error:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  // Fuse.js Intelligent Search Logic
+  const filteredBooks = useMemo(() => {
+    if (!query.trim() || catalog.length === 0) return catalog;
+
+    const fuse = new Fuse(catalog, {
+      keys: [
+        { name: 't', weight: 1.0 }, // Title
+        { name: 'a', weight: 0.7 }, // Author
+        { name: 'g', weight: 0.4 }  // Genre/Category
+      ],
+      threshold: 0.35, // Typos allowed, but keeps results relevant
+      distance: 100,
+      ignoreLocation: true
+    });
+
+    return fuse.search(query).map(result => result.item);
+  }, [catalog, query]);
 
   return (
     <div style={{ backgroundColor: '#020617', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ padding: '2rem', borderBottom: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <header style={{ padding: '2rem', borderBottom: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <Link to="/" style={{ textDecoration: 'none' }}>
-           <h2 style={{ fontFamily: 'Cinzel', color: '#f59e0b', margin: 0, fontSize: '1.5rem' }}>COSMIC VAULT</h2>
+           <h2 style={{ fontFamily: 'Cinzel', color: '#f59e0b', margin: 0, fontSize: '1.5rem', letterSpacing: '2px' }}>COSMIC VAULT</h2>
         </Link>
-        <p style={{ margin: 0, color: '#64748b' }}>MANIFESTING: <span style={{ color: '#f8fafc' }}>"{query}"</span></p>
+        <div style={{ textAlign: 'right' }}>
+            <p style={{ margin: 0, color: '#64748b', fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase' }}>
+                Manifesting Sector: <span style={{ color: '#f8fafc' }}>"{query}"</span>
+            </p>
+        </div>
       </header>
 
       <main style={{ flex: 1, padding: '2rem' }}>
         {loading ? (
-          <p style={{ textAlign: 'center', color: '#f59e0b' }}>SCANNING ARCHIVES...</p>
-        ) : books.length > 0 ? (
+          <div style={{ textAlign: 'center', marginTop: '6rem' }}>
+            <p className="pulse" style={{ color: '#f59e0b', fontFamily: 'Cinzel', letterSpacing: '5px' }}>SCANNING MULTIVERSE...</p>
+          </div>
+        ) : filteredBooks.length > 0 ? (
           <>
             <div className="results-grid">
-              {books.slice(0, visibleCount).map((book: any, i) => (
+              {filteredBooks.slice(0, visibleCount).map((book: any, i) => (
                 <div key={i} className="book-card">
-                  <span className="genre-tag">{book.g || 'General'}</span>
-                  <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>{book.t}</h3>
-                  <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '1.5rem' }}>{book.a}</p>
-                  <a href={book.u} target="_blank" rel="noreferrer" className="read-link">ACCESS ARCHIVE</a>
+                  <span className="genre-tag">{book.g || 'ARCHIVAL RECORD'}</span>
+                  <h3 style={{ fontSize: '1.25rem', marginBottom: '0.75rem', lineHeight: '1.4', fontWeight: '600' }}>{book.t}</h3>
+                  <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '2rem', borderLeft: '2px solid #f59e0b', paddingLeft: '12px' }}>
+                    {book.a}
+                  </p>
+                  <a href={book.u} target="_blank" rel="noreferrer" className="read-link">ACCESS DATA</a>
                 </div>
               ))}
             </div>
-            {visibleCount < books.length && (
+            
+            {visibleCount < filteredBooks.length && (
               <button className="load-more" onClick={() => setVisibleCount(prev => prev + 9)}>
                 LOAD FURTHER RECORDS
               </button>
             )}
           </>
         ) : (
-          <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-            <p style={{ color: '#f59e0b' }}>NO RECORDS FOUND IN THIS SECTOR.</p>
-            <Link to="/" style={{ color: '#94a3b8' }}>Return to Navigation</Link>
+          <div style={{ textAlign: 'center', marginTop: '8rem' }}>
+            <p style={{ color: '#f59e0b', fontSize: '1.2rem', letterSpacing: '2px', fontFamily: 'Cinzel' }}>VOID DETECTED: NO RECORDS AT THESE COORDINATES.</p>
+            <Link to="/" style={{ color: '#64748b', textDecoration: 'none', marginTop: '1.5rem', display: 'inline-block', fontSize: '0.9rem', borderBottom: '1px solid #334155', paddingBottom: '2px' }}>
+                Return to Navigation Hub
+            </Link>
           </div>
         )}
       </main>
