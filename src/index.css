@@ -1,100 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600&display=swap');
+/* Update the existing styles or add these */
 
-:root {
-  --space-dark: #020617;
-  --gold: #f59e0b;
-  --star-white: #f8fafc;
+.main-search:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
 }
 
-body {
-  margin: 0;
-  background-color: var(--space-dark);
-  color: var(--star-white);
-  font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
-}
-
-/* Cosmic Background Animation */
-.cosmic-bg {
-  background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Titles */
-.cinzel-title {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(2.5rem, 8vw, 5rem); /* Responsive font size */
-  color: var(--gold);
-  text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
-}
-
-/* Mobile Friendly Search */
-.search-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 90%;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-@media (min-width: 768px) {
-  .search-container { flex-direction: row; }
-}
-
-.main-search {
-  flex: 1;
-  padding: 1.2rem;
-  border-radius: 50px;
-  border: 1px solid #334155;
-  background: rgba(30, 41, 59, 0.7);
-  color: white;
-  font-size: 1.1rem;
-  outline: none;
-}
-
-.search-btn {
-  padding: 1rem 2.5rem;
-  border-radius: 50px;
-  background: var(--gold);
+.read-link {
+  text-decoration: none;
   color: black;
+  background: var(--gold);
+  padding: 0.8rem;
+  text-align: center;
+  border-radius: 4px;
   font-weight: bold;
-  border: none;
-  cursor: pointer;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
   transition: 0.3s;
 }
 
-/* Results Grid - Responsive Columns */
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
-  padding: 2rem;
+.read-link:hover {
+  background: white;
+  transform: scale(1.02);
 }
 
-.book-card {
-  background: rgba(30, 41, 59, 0.4);
-  border: 1px solid #1e293b;
-  padding: 2rem;
-  border-radius: 15px;
-  transition: transform 0.2s;
-}
-
-.book-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--gold);
-}
-
-.load-more {
-  display: block;
-  margin: 3rem auto;
-  padding: 1rem 3rem;
-  background: transparent;
+.genre-tag {
   color: var(--gold);
-  border: 1px solid var(--gold);
-  border-radius: 5px;
-  cursor: pointer;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: block;
 }
