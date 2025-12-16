@@ -1,114 +1,98 @@
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import './App.css'; // We will put cosmic animations here
 
-// Interface to match your Python JSON keys: t (title), a (author), g (genre), u (url)
-interface Book {
-  id: string;
-  t: string; 
-  a: string; 
-  g: string; 
-  y: string; 
-  u: string; 
-}
+// --- COMPONENTS ---
 
-function App() {
-  const [catalog, setCatalog] = useState<Book[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+const Home = () => {
+  const [query, setQuery] = useState('');
+  const navigate = useNavigate();
 
-  // Fetch the data from the public folder
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      // Navigate to results page with the query as a URL parameter
+      navigate(`/search?q=${encodeURIComponent(query)}`);
+    }
+  };
+
+  return (
+    <div className="cosmic-bg full-center">
+      <div className="hero-section">
+        <h1 className="cinzel-title">COSMIC VAULT</h1>
+        <div className="mission-box">
+          <p>"Preserving the collective intellect of humanity."</p>
+        </div>
+        
+        <form onSubmit={handleSearch} className="search-container">
+          <input 
+            type="text" 
+            placeholder="Search the infinite..." 
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="main-search"
+          />
+          <button type="submit" className="search-btn">Explore</button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const Results = () => {
+  const [books, setBooks] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(6); // Limit to 6 initially
+  const query = new URLSearchParams(window.location.search).get('q') || '';
+
   useEffect(() => {
     fetch('/cosmic_catalog.json')
       .then(res => res.json())
-      .then(data => setCatalog(data))
-      .catch(err => console.error("Vault Error:", err));
-  }, []);
-
-  // Filter logic: Checks Title, Author, and Genre
-  const filteredBooks = catalog.filter(book => 
-    book.t.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    book.a.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    book.g.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      .then(data => {
+        const filtered = data.filter((b: any) => 
+          b.t.toLowerCase().includes(query.toLowerCase()) || 
+          b.a.toLowerCase().includes(query.toLowerCase())
+        );
+        setBooks(filtered);
+      });
+  }, [query]);
 
   return (
-    <div style={{ backgroundColor: '#0f172a', minHeight: '100vh', color: '#f8fafc', padding: '2rem', fontFamily: 'Inter, sans-serif' }}>
-      
-      {/* 1. MISSION STATEMENT SECTION */}
-      <header style={{ maxWidth: '800px', margin: '0 auto 3rem auto', textAlign: 'center' }}>
-        <h1 style={{ fontFamily: 'Cinzel, serif', fontSize: '4rem', color: '#f59e0b', marginBottom: '1rem' }}>COSMIC VAULT</h1>
-        <div style={{ borderLeft: '4px solid #f59e0b', padding: '1rem', backgroundColor: 'rgba(30, 41, 59, 0.5)', fontStyle: 'italic' }}>
-          <p style={{ fontSize: '1.2rem', color: '#94a3b8', margin: 0 }}>
-            "A modern Library of Alexandria: Preserving the collective intellect of humanity 
-            through decentralized archival. Open access for all, forever."
-          </p>
-        </div>
+    <div className="results-page">
+      <header className="results-header">
+        <h2 onClick={() => window.location.href='/'} className="logo-small">COSMIC VAULT</h2>
+        <p>Results for: <span>"{query}"</span></p>
       </header>
 
-      {/* 2. INTELLIGENT SEARCH BAR */}
-      <div style={{ maxWidth: '600px', margin: '0 auto 4rem auto' }}>
-        <input 
-          type="text"
-          placeholder="Search the vault (Title, Author, or Genre)..."
-          style={{
-            width: '100%',
-            padding: '1rem',
-            borderRadius: '8px',
-            backgroundColor: '#1e293b',
-            border: '1px solid #334155',
-            color: 'white',
-            fontSize: '1.2rem',
-            outline: 'none'
-          }}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem', textAlign: 'right' }}>
-          Showing {filteredBooks.length} results
-        </p>
-      </div>
-
-      {/* 3. RESULTS GRID */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-        gap: '1.5rem',
-        maxWidth: '1200px',
-        margin: '0 auto'
-      }}>
-        {filteredBooks.map((book, index) => (
-          <div key={index} style={{ 
-            backgroundColor: '#1e293b', 
-            padding: '1.5rem', 
-            borderRadius: '12px', 
-            border: '1px solid #334155',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between'
-          }}>
-            <div>
-              <span style={{ color: '#f59e0b', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '0.1rem' }}>{book.g.toUpperCase()}</span>
-              <h3 style={{ fontSize: '1.25rem', margin: '0.5rem 0' }}>{book.t}</h3>
-              <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>{book.a} ({book.y})</p>
-            </div>
-            <a 
-              href={book.u} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{
-                marginTop: '1.5rem',
-                backgroundColor: '#f59e0b',
-                color: 'black',
-                textAlign: 'center',
-                padding: '0.6rem',
-                borderRadius: '6px',
-                textDecoration: 'none',
-                fontWeight: 'bold'
-              }}
-            >
-              Read Now
-            </a>
+      <div className="results-grid">
+        {books.slice(0, visibleCount).map((book: any, i) => (
+          <div key={i} className="book-card">
+            <span className="genre-tag">{book.g}</span>
+            <h3>{book.t}</h3>
+            <p>{book.a}</p>
+            <a href={book.u} target="_blank" className="read-link">Read Now</a>
           </div>
         ))}
       </div>
+
+      {visibleCount < books.length && (
+        <button className="load-more" onClick={() => setVisibleCount(prev => prev + 6)}>
+          Show More
+        </button>
+      )}
     </div>
+  );
+};
+
+// --- MAIN ROUTER ---
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/search" element={<Results />} />
+      </Routes>
+    </Router>
   );
 }
 
