@@ -109,3 +109,41 @@ body {
   border-color: var(--electric-blue);
   box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
 }
+
+/* ... Keep previous imports and root variables ... */
+
+/* STARGAZE MODE LOGIC */
+.stargaze-active .fixed-nav,
+.stargaze-active .cosmic-footer {
+  opacity: 0.2; /* Dim the interface */
+  transition: opacity 1s ease;
+}
+
+.stargaze-active .fixed-nav:hover,
+.stargaze-active .cosmic-footer:hover {
+  opacity: 1; /* Reveal on hover */
+}
+
+.stargaze-active .hero-headline {
+  text-shadow: 0 0 50px var(--electric-blue); /* Intense glow */
+}
+
+.stargaze-btn {
+  margin-top: 2rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--electric-blue);
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: 0.4s;
+}
+
+.stargaze-btn:hover {
+  background: var(--electric-blue);
+  color: black;
+  box-shadow: 0 0 20px var(--electric-blue);
+}
+
+/* ... Keep previous styles below ... */

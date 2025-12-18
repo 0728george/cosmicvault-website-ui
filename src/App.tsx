@@ -4,10 +4,10 @@ import Fuse from 'fuse.js';
 
 // --- COMPONENTS ---
 
-const Header = ({ warmLevel, setWarmLevel }: any) => (
-  <header className="fixed-nav">
+const Header = ({ warmLevel, setWarmLevel, isStargaze }: any) => (
+  <header className={`fixed-nav ${isStargaze ? 'nav-dimmed' : ''}`}>
     <div className="nav-container">
-      <Link href="/" className="cv-logo">CV</Link>
+      <Link to="/" className="cv-logo">CV</Link>
       <nav className="nav-links">
         <Link to="/">HOME</Link>
         <a href="#browse">BROWSE</a>
@@ -39,7 +39,6 @@ const Hero = () => {
       <div className="hero-content">
         <h1 className="hero-headline glow-animate">Cosmic Vault</h1>
         <p className="hero-subheadline">Gateway to Infinite Knowledge</p>
-        <p className="hero-mission">Explore millions of public-domain texts—free, secure, and eternal.</p>
         
         <form onSubmit={handleSearch} className="hero-search-box">
           <input 
@@ -55,8 +54,8 @@ const Hero = () => {
   );
 };
 
-const Footer = () => (
-  <footer className="cosmic-footer">
+const Footer = ({ toggleStargaze, isStargaze }: any) => (
+  <footer className={`cosmic-footer ${isStargaze ? 'footer-dimmed' : ''}`}>
     <div className="footer-grid">
       <div className="footer-col">
         <h4>MISSION</h4>
@@ -67,6 +66,11 @@ const Footer = () => (
         <p>Released under MIT/CC0. Nexus Verified .US Archive.</p>
       </div>
     </div>
+    
+    <button onClick={toggleStargaze} className="stargaze-btn">
+      {isStargaze ? "EXIT DEEP SPACE" : "🔭 STARGAZE MODE"}
+    </button>
+
     <div className="authorship-area">
       <p>CREATED BY COMYANDRADIS</p>
       <p className="copyright-tag">© 2025 COSMIC VAULT</p>
@@ -76,16 +80,16 @@ const Footer = () => (
 
 // --- PAGES ---
 
-const Home = ({ warmLevel, setWarmLevel }: any) => (
-  <div className="page-wrapper">
+const Home = ({ warmLevel, setWarmLevel, toggleStargaze, isStargaze }: any) => (
+  <div className={`page-wrapper ${isStargaze ? 'stargaze-active' : ''}`}>
     <div className="warmth-overlay" style={{ backgroundColor: `rgba(255, 140, 0, ${warmLevel / 100})` }} />
-    <Header warmLevel={warmLevel} setWarmLevel={setWarmLevel} />
+    <Header warmLevel={warmLevel} setWarmLevel={setWarmLevel} isStargaze={isStargaze} />
     <Hero />
-    <Footer />
+    <Footer toggleStargaze={toggleStargaze} isStargaze={isStargaze} />
   </div>
 );
 
-const Results = ({ warmLevel, setWarmLevel }: any) => {
+const Results = ({ warmLevel, setWarmLevel, toggleStargaze, isStargaze }: any) => {
   const [catalog, setCatalog] = useState([]);
   const [visibleCount, setVisibleCount] = useState(9);
   const { search } = useLocation();
@@ -102,9 +106,9 @@ const Results = ({ warmLevel, setWarmLevel }: any) => {
   }, [catalog, query]);
 
   return (
-    <div className="page-wrapper">
+    <div className={`page-wrapper ${isStargaze ? 'stargaze-active' : ''}`}>
       <div className="warmth-overlay" style={{ backgroundColor: `rgba(255, 140, 0, ${warmLevel / 100})` }} />
-      <Header warmLevel={warmLevel} setWarmLevel={setWarmLevel} />
+      <Header warmLevel={warmLevel} setWarmLevel={setWarmLevel} isStargaze={isStargaze} />
       <main className="results-container">
         <h2 className="results-status">DECODING SECTOR: "{query}"</h2>
         <div className="results-grid">
@@ -118,18 +122,32 @@ const Results = ({ warmLevel, setWarmLevel }: any) => {
           ))}
         </div>
       </main>
-      <Footer />
+      <Footer toggleStargaze={toggleStargaze} isStargaze={isStargaze} />
     </div>
   );
 };
 
 export default function App() {
   const [warmLevel, setWarmLevel] = useState(0);
+  const [isStargaze, setIsStargaze] = useState(false);
+
+  const toggleStargaze = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((e) => console.log(e));
+      setIsStargaze(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen(); 
+        setIsStargaze(false);
+      }
+    }
+  };
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home warmLevel={warmLevel} setWarmLevel={setWarmLevel} />} />
-        <Route path="/search" element={<Results warmLevel={warmLevel} setWarmLevel={setWarmLevel} />} />
+        <Route path="/" element={<Home warmLevel={warmLevel} setWarmLevel={setWarmLevel} toggleStargaze={toggleStargaze} isStargaze={isStargaze} />} />
+        <Route path="/search" element={<Results warmLevel={warmLevel} setWarmLevel={setWarmLevel} toggleStargaze={toggleStargaze} isStargaze={isStargaze} />} />
       </Routes>
     </Router>
   );
