@@ -12,16 +12,22 @@ body {
   background: var(--void);
   color: white;
   font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
 }
 
+/* --- PARALLAX BACKGROUND --- */
 .page-wrapper {
   background: linear-gradient(to bottom, var(--void), var(--nebula));
   background-image: url('/bg-stars.jpg');
-  background-attachment: fixed;
+  background-attachment: fixed; /* Parallax Depth */
   background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Glassmorphism Header */
+/* --- HEADER & SPECTRAL --- */
 .fixed-nav {
   position: fixed;
   top: 0; width: 100%;
@@ -29,16 +35,19 @@ body {
   background: rgba(0,0,0,0.5);
   border-bottom: 1px solid rgba(255,255,255,0.05);
   z-index: 1000;
+  transition: opacity 1s ease;
 }
 
 .nav-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
+.nav-left { display: flex; align-items: center; gap: 3rem; }
 
 .cv-logo {
   font-family: 'Orbitron';
@@ -48,7 +57,27 @@ body {
   text-shadow: 0 0 10px var(--electric-blue);
 }
 
-/* Wormhole Hero */
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  margin-right: 2rem;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  opacity: 0.8;
+  transition: 0.3s;
+}
+.nav-links a:hover { opacity: 1; color: var(--electric-blue); }
+
+.spectral-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  color: var(--electric-blue);
+}
+
+/* --- HERO & WORMHOLE --- */
 .hero-viewport {
   height: 100vh;
   display: flex;
@@ -62,6 +91,30 @@ body {
   font-size: clamp(3rem, 10vw, 6rem);
   letter-spacing: 10px;
   text-shadow: 0 0 20px var(--electric-blue);
+  margin-bottom: 0.5rem;
+}
+
+.hero-subheadline {
+  font-size: 1.5rem;
+  color: #a5f3fc;
+  margin-bottom: 2rem;
+}
+
+.hero-search-box {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+
+.hero-search-box input {
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.5);
+  color: white;
+  min-width: 300px;
 }
 
 .wormhole-btn {
@@ -73,63 +126,59 @@ body {
   cursor: pointer;
   transition: all 0.5s ease;
   font-weight: bold;
+  font-family: 'Orbitron';
 }
 
 .wormhole-btn:hover {
-  border-radius: 5px; /* The "Warp" effect */
+  border-radius: 5px; /* Warp effect */
   box-shadow: 0 0 30px var(--electric-blue);
   background: var(--electric-blue);
   color: black;
 }
 
-/* Footer & Authorship */
+/* --- CONSTELLATION LOADER --- */
+.constellation-container {
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.constellation-svg { width: 150px; height: 150px; }
+.draw-path {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: draw 3s infinite alternate;
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.loading-text-orbitron {
+  font-family: 'Orbitron';
+  color: var(--electric-blue);
+  letter-spacing: 4px;
+  margin-top: 1rem;
+}
+
+/* --- FOOTER & STAR MAP --- */
 .cosmic-footer {
   padding: 4rem 2rem;
   background: rgba(0,0,0,0.8);
   border-top: 1px solid rgba(255,255,255,0.05);
   text-align: center;
-}
-
-.authorship-area {
-  margin-top: 3rem;
-  letter-spacing: 4px;
-  color: #4b5563;
-  font-size: 0.8rem;
-}
-
-/* Grid Cards */
-.cosmic-card {
-  background: rgba(0,0,0,0.6);
-  border: 1px solid rgba(0, 191, 255, 0.2);
-  padding: 2rem;
-  transition: 0.3s;
-}
-
-.cosmic-card:hover {
-  border-color: var(--electric-blue);
-  box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
-}
-
-/* ... Keep previous imports and root variables ... */
-
-/* STARGAZE MODE LOGIC */
-.stargaze-active .fixed-nav,
-.stargaze-active .cosmic-footer {
-  opacity: 0.2; /* Dim the interface */
   transition: opacity 1s ease;
 }
 
-.stargaze-active .fixed-nav:hover,
-.stargaze-active .cosmic-footer:hover {
-  opacity: 1; /* Reveal on hover */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 800px;
+  margin: 0 auto 3rem auto;
+  gap: 2rem;
+  text-align: left;
 }
-
-.stargaze-active .hero-headline {
-  text-shadow: 0 0 50px var(--electric-blue); /* Intense glow */
-}
+.footer-col h4 { color: var(--electric-blue); font-family: 'Orbitron'; margin-bottom: 0.5rem; }
+.footer-col p { font-size: 0.8rem; color: #9ca3af; line-height: 1.6; }
 
 .stargaze-btn {
-  margin-top: 2rem;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: var(--electric-blue);
@@ -138,12 +187,45 @@ body {
   cursor: pointer;
   letter-spacing: 2px;
   transition: 0.4s;
+  margin-bottom: 3rem;
 }
+.stargaze-btn:hover { background: var(--electric-blue); color: black; box-shadow: 0 0 20px var(--electric-blue); }
 
-.stargaze-btn:hover {
-  background: var(--electric-blue);
-  color: black;
-  box-shadow: 0 0 20px var(--electric-blue);
+.star-map-container {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  padding: 20px;
 }
+.star-map-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 200px; height: 100px;
+  background: radial-gradient(ellipse, rgba(0, 191, 255, 0.2) 0%, transparent 70%);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+.star-map-container:hover .star-map-glow { transform: translate(-50%, -50%) scale(1.5); }
+.star-map-container:hover .authorship { color: var(--electric-blue); text-shadow: 0 0 10px var(--electric-blue); }
 
-/* ... Keep previous styles below ... */
+.authorship { letter-spacing: 5px; font-size: 0.9rem; color: #f8fafc; font-weight: 600; margin: 0; transition: 0.3s; }
+.copyright-tag { font-size: 0.6rem; color: #6b7280; letter-spacing: 2px; margin-top: 5px; }
+
+/* --- STARGAZE DIMMING --- */
+.stargaze-active .fixed-nav, .stargaze-active .cosmic-footer { opacity: 0; }
+.stargaze-active .fixed-nav:hover, .stargaze-active .cosmic-footer:hover { opacity: 1; }
+
+/* --- RESULTS --- */
+.results-container { min-height: 60vh; padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+.results-status { font-family: 'Orbitron'; color: var(--electric-blue); margin-bottom: 2rem; }
+.results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
+.cosmic-card {
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(0, 191, 255, 0.2);
+  padding: 2rem;
+  transition: 0.3s;
+}
+.cosmic-card:hover { border-color: var(--electric-blue); box-shadow: 0 0 20px rgba(0, 191, 255, 0.2); transform: translateY(-5px); }
+.card-genre { color: var(--electric-blue); font-size: 0.7rem; letter-spacing: 2px; font-weight: bold; display: block; margin-bottom: 1rem; }
+.vault-link { display: inline-block; margin-top: 1rem; color: white; text-decoration: none; border-bottom: 1px solid var(--electric-blue); font-size: 0.8rem; }
