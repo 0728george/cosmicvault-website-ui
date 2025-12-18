@@ -1,97 +1,111 @@
-/* ... Previous Font Imports ... */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&family=Cinzel:wght@700&display=swap');
+
+:root {
+  --void: #000000;
+  --nebula: #1A0033;
+  --electric-blue: #00BFFF;
+  --gold: #f59e0b;
+}
+
+body {
+  margin: 0;
+  background: var(--void);
+  color: white;
+  font-family: 'Inter', sans-serif;
+}
 
 .page-wrapper {
+  background: linear-gradient(to bottom, var(--void), var(--nebula));
   background-image: url('/bg-stars.jpg');
   background-attachment: fixed;
   background-size: cover;
-  background-position: center;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
-/* TOP RIGHT FILTER */
-.health-controls-top-right {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
+/* Glassmorphism Header */
+.fixed-nav {
+  position: fixed;
+  top: 0; width: 100%;
+  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.5);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
   z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  background: rgba(0, 0, 0, 0.6); /* High contrast background */
-  padding: 10px 20px;
-  border-radius: 50px;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  font-size: 0.7rem;
-  color: #f8fafc;
-  letter-spacing: 2px;
 }
 
-/* CENTERED HOME LAYOUT */
-.home-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-/* FOOTER - Center and Contrast */
-.admin-footer {
-  margin-top: auto;
-  padding: 5rem 0 3rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.authorship {
-  letter-spacing: 6px;
-  font-size: 0.9rem;
-  color: #f8fafc; /* Forced white for visibility */
-  font-weight: 600;
-  text-shadow: 0 0 10px rgba(0,0,0,1); /* Shadow for legibility against stars */
-  margin: 0;
-}
-
-.footer-sub {
-  font-size: 0.6rem;
-  color: #94a3b8;
-  letter-spacing: 2px;
-  margin-top: 10px;
-  text-shadow: 0 0 5px rgba(0,0,0,1);
-}
-
-/* Fix for invisible results grid */
-.results-main {
-  flex: 1;
-  width: 100%;
+.nav-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-}
-
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-/* Ensure Logo/Sector on Search Page are visible */
-.results-header-minimal {
-  padding: 2rem;
+  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.sector-manifest {
-  color: #f59e0b;
+.cv-logo {
+  font-family: 'Orbitron';
+  font-size: 2rem;
+  color: white;
+  text-decoration: none;
+  text-shadow: 0 0 10px var(--electric-blue);
+}
+
+/* Wormhole Hero */
+.hero-viewport {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-headline {
+  font-family: 'Orbitron';
+  font-size: clamp(3rem, 10vw, 6rem);
+  letter-spacing: 10px;
+  text-shadow: 0 0 20px var(--electric-blue);
+}
+
+.wormhole-btn {
+  background: rgba(42, 10, 74, 0.5);
+  border: 1px solid var(--electric-blue);
+  color: white;
+  padding: 1rem 3rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.5s ease;
+  font-weight: bold;
+}
+
+.wormhole-btn:hover {
+  border-radius: 5px; /* The "Warp" effect */
+  box-shadow: 0 0 30px var(--electric-blue);
+  background: var(--electric-blue);
+  color: black;
+}
+
+/* Footer & Authorship */
+.cosmic-footer {
+  padding: 4rem 2rem;
+  background: rgba(0,0,0,0.8);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  text-align: center;
+}
+
+.authorship-area {
+  margin-top: 3rem;
+  letter-spacing: 4px;
+  color: #4b5563;
   font-size: 0.8rem;
-  letter-spacing: 2px;
-  font-family: 'Cinzel';
+}
+
+/* Grid Cards */
+.cosmic-card {
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(0, 191, 255, 0.2);
+  padding: 2rem;
+  transition: 0.3s;
+}
+
+.cosmic-card:hover {
+  border-color: var(--electric-blue);
+  box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
 }
