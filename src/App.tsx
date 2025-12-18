@@ -9,8 +9,8 @@ const Footer = () => (
     <div className="star-map-container">
       <div className="star-map-glow"></div>
       <p className="authorship">CREATED BY COMYANDRADIS</p>
+      <p className="footer-sub">© 2025 COSMIC VAULT • ARCHIVAL INTELLIGENCE UNIT</p>
     </div>
-    <p className="footer-sub">© 2025 COSMIC VAULT • ARCHIVAL INTELLIGENCE UNIT</p>
   </footer>
 );
 
@@ -30,11 +30,7 @@ const HealthSettings = ({ warmLevel, setWarmLevel }: any) => (
 const ConstellationLoader = () => (
   <div className="constellation-container">
     <svg viewBox="0 0 100 100" className="constellation-svg">
-      <circle cx="20" cy="50" r="1.5" fill="white" />
-      <circle cx="50" cy="20" r="1.5" fill="white" />
-      <circle cx="80" cy="50" r="1.5" fill="white" />
-      <circle cx="50" cy="80" r="1.5" fill="white" />
-      <path d="M20 50 L50 20 L80 50 L50 80 Z" fill="none" stroke="rgba(245, 158, 11, 0.5)" strokeWidth="0.5" className="draw-path" />
+      <path d="M20 50 L50 20 L80 50 L50 80 Z" fill="none" stroke="#f59e0b" strokeWidth="0.5" className="draw-path" />
     </svg>
     <p className="loading-text-cinzel">ALIGNING CONSTELLATIONS...</p>
   </div>
@@ -90,43 +86,55 @@ const Results = ({ warmLevel, setWarmLevel }: any) => {
   useEffect(() => {
     fetch('/cosmic_catalog.json').then(res => res.json()).then(data => {
       setCatalog(data);
-      setTimeout(() => setLoading(false), 1500); // Artificial delay to show constellation
+      // Fixed: Loading state ends only after data is ready
+      setTimeout(() => setLoading(false), 1000); 
     });
   }, []);
 
   const filteredBooks = useMemo(() => {
     if (!query.trim()) return catalog;
-    const fuse = new Fuse(catalog, { keys: [{name:'t',weight:1}, {name:'a',weight:0.7}, {name:'g',weight:0.4}], threshold: 0.35 });
+    const fuse = new Fuse(catalog, { 
+        keys: [{name:'t',weight:1}, {name:'a',weight:0.7}, {name:'g',weight:0.4}], 
+        threshold: 0.35 
+    });
     return fuse.search(query).map(r => r.item);
   }, [catalog, query]);
 
   return (
     <div className="page-wrapper parallax-bg">
       <div className="warmth-overlay" style={{ backgroundColor: `rgba(255, 140, 0, ${warmLevel / 100})` }} />
+      <HealthSettings warmLevel={warmLevel} setWarmLevel={setWarmLevel} />
+      
       <header className="results-header-minimal">
         <Link to="/" className="logo-link">COSMIC VAULT</Link>
-        <HealthSettings warmLevel={warmLevel} setWarmLevel={setWarmLevel} />
+        <p className="sector-manifest">SECTOR: <span>"{query}"</span></p>
       </header>
       
       <main className="results-main">
         {loading ? (
           <ConstellationLoader />
         ) : (
-          <>
-            <div className="results-grid">
-              {filteredBooks.slice(0, visibleCount).map((book: any, i) => (
-                <div key={i} className="book-card">
-                  <span className="genre-tag">{book.g || 'ARCHIVAL RECORD'}</span>
-                  <h3>{book.t}</h3>
-                  <p className="author-tag">{book.a}</p>
-                  <a href={book.u} target="_blank" rel="noreferrer" className="read-link">ACCESS DATA</a>
+          <div className="results-content">
+            {filteredBooks.length > 0 ? (
+              <>
+                <div className="results-grid">
+                  {filteredBooks.slice(0, visibleCount).map((book: any, i) => (
+                    <div key={i} className="book-card">
+                      <span className="genre-tag">{book.g || 'ARCHIVAL RECORD'}</span>
+                      <h3>{book.t}</h3>
+                      <p className="author-tag">{book.a}</p>
+                      <a href={book.u} target="_blank" rel="noreferrer" className="read-link">ACCESS DATA</a>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            {visibleCount < filteredBooks.length && (
-              <button className="load-more" onClick={() => setVisibleCount(v => v + 9)}>DECODE FURTHER RECORDS</button>
+                {visibleCount < filteredBooks.length && (
+                  <button className="load-more" onClick={() => setVisibleCount(v => v + 9)}>LOAD FURTHER RECORDS</button>
+                )}
+              </>
+            ) : (
+              <p className="no-results">NO RECORDS FOUND IN THIS SECTOR.</p>
             )}
-          </>
+          </div>
         )}
       </main>
       <Footer />
